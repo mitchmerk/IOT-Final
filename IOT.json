@@ -1,0 +1,85 @@
+[
+    {
+        "id": "96788140.250f1",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7cbd0019.45c47",
+        "type": "twitter in",
+        "z": "96788140.250f1",
+        "twitter": "",
+        "tags": "spark-call,spark-read",
+        "user": "false",
+        "name": "get tweet",
+        "inputs": 0,
+        "x": 400,
+        "y": 100,
+        "wires": [
+            [
+                "1b29b92b.2a3737"
+            ]
+        ]
+    },
+    {
+        "id": "1b29b92b.2a3737",
+        "type": "function",
+        "z": "96788140.250f1",
+        "name": "Process",
+        "func": "var tckns = msg.payload.split(\" \");\nvar pl = msg.payload;\nvar pos = pl.indexOf(\" \");\n\nvar op = \"function\";\nvar name = \"\";\nvar payld = \"\";\n\nop = msg.payload.substring(0, pos);\npl = pl.substring(pos + 1);\npos = pl.indexOf(\" \");\n\nif(-1 != pos){\n\tname = pl.substring(0, pos);\n\tpayld = pl.substring(pos + 1);\n}else{\n\tname = pl;\n}\n\nif(op == \"spark-call\"){\n\top = \"function\";\n}\nelse if(op == \"spark-read\"){\n\top = \"variable\";\n}\n\nvar newMsg = {\n\tname: name,\n\toperation: op,\n\tpayload: payld,\n};\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 160,
+        "wires": [
+            [
+                "18020de1.a48272"
+            ]
+        ]
+    },
+    {
+        "id": "8e9b79e4.e78358",
+        "type": "twitter out",
+        "z": "96788140.250f1",
+        "twitter": "",
+        "name": "Response",
+        "x": 400,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "18020de1.a48272",
+        "type": "SparkCore in",
+        "z": "96788140.250f1",
+        "baseurl": "https://api.spark.io",
+        "method": "readmsg",
+        "fve": "",
+        "param": "",
+        "repeat": 0,
+        "x": 400,
+        "y": 220,
+        "wires": [
+            [
+                "7a0f79bf.090b18"
+            ]
+        ]
+    },
+    {
+        "id": "7a0f79bf.090b18",
+        "type": "function",
+        "z": "96788140.250f1",
+        "name": "Result",
+        "func": "var today = new Date();\nvar str = today.toGMTString();  // deprecated! use toUTCString()\nvar result = msg.payload + \" (updated on \" + str + \")\";\n\nvar newMsg = {\n\tpayload: result\n};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 280,
+        "wires": [
+            [
+                "8e9b79e4.e78358"
+            ]
+        ]
+    }
+]
